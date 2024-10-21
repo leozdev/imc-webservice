@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "main aside"
+        "footer footer";
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+    background-color: #f9f9f9;
+}
+
+header, main, aside, footer {
+    padding: 20px;
+}
+
+header {
+    grid-area: header;
+    background-color: #191627;
+    color: white;
+    text-align: center;
+}
+
+main {
+    grid-area: main;
+    text-align: center;
+}
+
+aside {
+    width: 80%;
+    color: white;
+    padding-top: 40px;
+    margin-left: 40px;
+    text-align: center;
+    align-items: center;
+}
+
+footer {
+    grid-area: footer;
+    background-color: #191627;
+    color: white;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px #191627;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    text-align: center;
+    background-color: #191627;
+    color: white;
+}
+
+.cadastro {
+    background-color: #191627;
+    border-radius: 20px;
+    padding: 20px;
+    width: 80%;
+}
+
+input {
+    width: 50%;
+    padding: 8px;
+    margin: 10px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: #DD7631;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 15px;
+    padding: 10px;
+    font-size: 15px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+button:hover {
+    background-color: #191627;
+}
+
+.btn_cadastro:hover {
+    background-color: white;
+    color: #191627;
+}
+
+button {
+    margin-top: 10px;
+}
+
+.button-container {
+    justify-content: center;
+    display: flex;
+    gap: 10px;
+}
+
+.aumentar-peso, .diminuir-peso, .excluir  {
+    padding: 5px 10px;
+    margin: 0;
+}
+
+form {
+    flex-direction: column;
+    align-items: center;
+}
