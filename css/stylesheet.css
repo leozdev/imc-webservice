@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+/* Geral */
 body {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
@@ -14,6 +16,7 @@ body {
     background-color: #f9f9f9;
 }
 
+/* Áreas principais (header, main, aside, footer) */
 header, main, aside, footer {
     padding: 20px;
 }
@@ -23,6 +26,7 @@ header {
     background-color: #191627;
     color: white;
     text-align: center;
+    margin-bottom: 20px;
 }
 
 main {
@@ -33,10 +37,11 @@ main {
 aside {
     width: 80%;
     color: white;
-    padding-top: 40px;
     margin-left: 40px;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    text-align: center;
 }
 
 footer {
@@ -46,55 +51,85 @@ footer {
     text-align: center;
 }
 
+/* Formulário e operações */
+.cadastro, .operations {
+    background-color: #191627;
+    border-radius: 20px;
+    padding: 20px;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto 20px;
+}
+
+.org {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+}
+
+.field {
+    text-align: left;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.field label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Tabela */
 table {
     width: 100%;
     border-collapse: collapse;
     border-radius: 10px;
     overflow: hidden;
-    margin-bottom: 20px;
     box-shadow: 0 2px 5px #191627;
 }
 
 th, td {
-    padding: 10px;
+    padding: 10px 25px;
     text-align: center;
 }
 
 th {
-    text-align: center;
     background-color: #191627;
     color: white;
 }
 
-.cadastro {
-    background-color: #191627;
-    border-radius: 20px;
-    padding: 20px;
-    width: 80%;
+.titulo-tabela {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    padding: 30px;
 }
 
-input {
-    width: 50%;
-    padding: 8px;
-    margin: 10px;
-    border-radius: 15px;
-    border: 1px solid #ccc;
+.tabela-imc {
+    padding-top: 40px;
 }
 
+/* Botões */
 button {
     background-color: #DD7631;
     color: white;
     border: none;
     cursor: pointer;
-    border-radius: 15px;
+    border-radius: 10px;
     padding: 10px;
     font-size: 15px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #191627;
+    background-color: white;
+    color: #191627;
 }
 
 .btn_cadastro:hover {
@@ -102,22 +137,99 @@ button:hover {
     color: #191627;
 }
 
-button {
-    margin-top: 10px;
-}
-
 .button-container {
-    justify-content: center;
     display: flex;
+    justify-content: center;
     gap: 10px;
 }
 
-.aumentar-peso, .diminuir-peso, .excluir  {
-    padding: 5px 10px;
-    margin: 0;
+.aumentar-peso, .diminuir-peso, .excluir {
+    padding: 10px 0px;
 }
 
-form {
-    flex-direction: column;
-    align-items: center;
+.aumentar-peso:hover, .diminuir-peso:hover, .excluir:hover {
+    color: white;
+    background-color: #191627;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+input:hover {
+    border: 2px solid #DD7631;
+    box-shadow: 0 0 5px #DD7631;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input::placeholder {
+    font-family: 'Montserrat', sans-serif; /* Define a fonte */
+    font-size: 14px; /* Define o tamanho da fonte */
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+    body {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "header"
+            "main"
+            "aside"
+            "footer";
+    }
+
+    aside {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    main {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    header, footer {
+        padding: 15px;
+    }
+
+    .cadastro, .operations {
+        width: 90%;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1, footer p {
+        font-size: 18px;
+    }
+
+    h2 {
+        font-size: 16px;
+    }
+
+    .field {
+        width: 90%;
+    }
+
+    button {
+        padding: 6px;
+    }
 }

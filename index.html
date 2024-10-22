@@ -1,62 +1,79 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="css/stylesheet.css" media="screen" />
-        <script src="js/scripts.js" defer></script>
-        <title>Calculadora de IMC</title>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/stylesheet.css" media="screen">
+    <script src="js/scripts.js" defer></script>
+    <title>Calculadora de IMC</title>
+</head>
+<body>
+    <header>
+        <h1>Calculadora de IMC</h1>
+    </header>
 
-    <body>
-
-        <header>
-            <h1>Calculadora de IMC</h1>
-        </header>
-
-        <main>
-            <h2>Pessoas Cadastradas</h2>
-            <table id="tabela-imc">
+    <main>
+        <section class"tabela-imc">
+            <table id="tabela-imc" aria-labelledby="Pessoas Cadastradas">
                 <thead>
                     <tr>
-                        <th>Nome</th>
-                        <th>Peso</th>
-                        <th>Altura</th>
-                        <th>IMC</th>
-                        <th>Status</th>
-                        <th>Opções</th>
+                        <th colspan="6" scope="col" class="titulo-tabela">Pessoas Cadastradas</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Altura (m)</th>
+                        <th scope="col">Peso (kg)</th>
+                        <th scope="col">IMC</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Opções</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- As linhas da tabela serão geradas dinamicamente aqui -->
                 </tbody>
             </table>
+        </section>
+    </main>
 
-            <button id="remover-maior-imc">Remover maior IMC</button>
-            <button id="remover-menor-imc">Remover menor IMC</button>
-        </main>
+    <aside>
+        <section class="cadastro">
+            <h2>Cadastrar</h2>
+            <form id="form-cadastro" class="org" aria-label="Formulário de cadastro">
+                <div class="field">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" placeholder="Nome da pessoa" required>
+                </div>
 
-        <aside>
-            <div class="cadastro">
-                <h2>Cadastrar</h2>
-                <form id="form-cadastro">
-                    <label for="nome">Nome:</label>
-                    <input type="text" id="nome" required><br><br>
+                <div class="field">
+                    <label for="altura">Altura (m)</label>
+                    <input type="number" id="altura" step="0.01" min="0.50" placeholder="Altura da pessoa" required>
+                </div>
 
-                    <label for="peso">Peso (kg):</label>
-                    <input type="number" id="peso" step="0.1" min="1" required><br><br>
+                <div class="field">
+                    <label for="peso">Peso (kg)</label>
+                    <input type="number" id="peso" step="0.1" min="1" placeholder="Peso da pessoa" required>
+                </div>
 
-                    <label for="altura">Altura (m):</label>
-                    <input type="number" id="altura" step="0.01" min="1" required><br><br>
-
+                <div class="field">
                     <button class="btn_cadastro" type="submit">Cadastrar</button>
-                </form>
-            </div>
-        </aside>
+                </div>
+            </form>
+        </section>
 
-        <footer>
-            <p>Integrantes: Leo Freitas, Mariana Montilha, Vinícius Rafael.</p>
-        </footer>
-        
-    </body>
+        <section class="operations">
+            <h2>Operações</h2>
+            <div class="org">
+                <div class="field">
+                    <button class="remover-maior-imc" id="remover-maior-imc">Remover maior IMC</button>
+                    <button class="remover-menor-imc" id="remover-menor-imc">Remover menor IMC</button>
+                </div>
+            </div>
+        </section>
+    </aside>
+
+    <footer>
+        <p>Desenvolvido por <strong>Leo Freitas</strong>, <strong>Mariana Montilha</strong>, <strong>Vinícius Rafael</strong>.</p>
+        <p>Instituto Federal de São Paulo - São Carlos</p>
+    </footer>
+</body>
 </html>

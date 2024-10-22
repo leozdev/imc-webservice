@@ -1,6 +1,88 @@
 const form = document.getElementById('form-cadastro');
 const tabelaImc = document.getElementById('tabela-imc').getElementsByTagName('tbody')[0];
 
+// Função para carregar pessoas do webservice
+async function carregarPessoas() {
+    try {
+        const response = await fetch('https://ifsp.ddns.net/webservices/imc/pessoa');
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+        }
+        const pessoas = await response.json();
+        preencherTabela(pessoas);
+    } catch (error) {
+        console.error('Erro:', error.message);
+    }
+}
+
+// Função para preencher a tabela com os dados recebidos
+function preencherTabela(pessoas) {
+    pessoas.forEach(pessoa => {
+        const newRow = tabelaImc.insertRow();
+
+        const nomeCell = newRow.insertCell();
+        nomeCell.textContent = pessoa.nome; 
+
+        const alturaCell = newRow.insertCell();
+        alturaCell.textContent = pessoa.altura;
+
+        const pesoCell = newRow.insertCell();
+        pesoCell.textContent = pessoa.peso;
+
+        const imc = (pesoCell.textContent / (alturaCell.textContent * alturaCell.textContent)).toFixed(2);
+        const imcCell = newRow.insertCell();
+        imcCell.textContent = imc;
+
+        const status = statusIMC(imc);
+        const statusCell = newRow.insertCell();
+        statusCell.textContent = status;
+
+        const botaos = newRow.insertCell();
+        botaos.innerHTML = '<div class="button-container"><button class="aumentar-peso">+ Peso</button> <button class="diminuir-peso">- Peso</button> <button class="excluir">Excluir</button></div>';
+
+        // Adicionar eventos para os botões
+        adicionarEventosBotoes(botaos, pesoCell, alturaCell, imcCell, statusCell);
+    });
+}
+
+// Função para adicionar eventos aos botões de aumentar, diminuir peso e excluir
+function adicionarEventosBotoes(botaos, pesoCell, alturaCell, imcCell, statusCell) {
+    const btnExcluir = botaos.querySelector('.excluir');
+    btnExcluir.addEventListener('click', () => {
+        const row = botaos.closest('tr');
+        row.remove();
+    });
+
+    const btnAumentarPeso = botaos.querySelector('.aumentar-peso');
+    btnAumentarPeso.addEventListener('click', () => {
+        let peso = parseFloat(pesoCell.textContent);
+        peso += 0.5;
+        pesoCell.textContent = peso.toFixed(2);
+        atualizarIMC(peso, alturaCell, imcCell, statusCell);
+    });
+
+    const btnDiminuirPeso = botaos.querySelector('.diminuir-peso');
+    btnDiminuirPeso.addEventListener('click', () => {
+        let peso = parseFloat(pesoCell.textContent);
+        if (peso > 0.5) {
+            peso -= 0.5;
+            pesoCell.textContent = peso.toFixed(2);
+            atualizarIMC(peso, alturaCell, imcCell, statusCell);
+        } else {
+            alert("Não é possível deixar o peso negativo!");
+        }
+    });
+}
+
+// Função para atualizar o IMC
+function atualizarIMC(peso, alturaCell, imcCell, statusCell) {
+    const altura = parseFloat(alturaCell.textContent);
+    const novoIMC = (peso / (altura * altura)).toFixed(2);
+    imcCell.textContent = novoIMC;
+    statusCell.textContent = statusIMC(novoIMC);
+}
+
+// Evento de submissão do formulário
 form.addEventListener('submit', function(event) {
     event.preventDefault();
     alert('Cadastro realizado com sucesso!');
@@ -32,42 +114,15 @@ form.addEventListener('submit', function(event) {
 
         const botaos = newRow.insertCell();
         botaos.innerHTML = '<div class="button-container"><button class="aumentar-peso">+ Peso</button> <button class="diminuir-peso">- Peso</button> <button class="excluir">Excluir</button></div>';
-        
-        const btnExcluir = botaos.querySelector('.excluir');
-        btnExcluir.addEventListener('click', () => {
-            newRow.remove();
-        });
 
-        const btnAumentarPeso = botaos.querySelector('.aumentar-peso');
-        btnAumentarPeso.addEventListener('click', () => {
-            console.log("clicou no aumentar");
-            peso += 0.5;
-            pesoCell.textContent = peso.toFixed(2);
-            atualizarIMC();
-        });
-
-        const btnDiminuirPeso = botaos.querySelector('.diminuir-peso');
-        btnDiminuirPeso.addEventListener('click', () => {
-            console.log("clicou no diminuir");
-            if (peso > 0.5) {
-                peso -= 0.5;
-                pesoCell.textContent = peso.toFixed(2);
-                atualizarIMC();
-            } else {
-                alert("Não é possivel deixar o peso negativo!");
-            }
-        });
-
-        function atualizarIMC() {
-            const novoIMC = (peso / (altura * altura)).toFixed(2);
-            imcCell.textContent = novoIMC;
-            statusCell.textContent = statusIMC(novoIMC);
-        }
+        // Adicionar eventos para os botões
+        adicionarEventosBotoes(botaos, pesoCell, alturaCell, imcCell, statusCell);
 
         form.reset();
     }
 });
 
+// Função para determinar o status do IMC
 function statusIMC(imc) {
     if (imc < 18.5) {
         return 'Magreza';
@@ -84,6 +139,7 @@ function statusIMC(imc) {
     }
 }
 
+// Eventos para remover maior e menor IMC
 const btnRemoverMaiorIMC = document.querySelector("#remover-maior-imc");
 btnRemoverMaiorIMC.addEventListener("click", removerMaiorIMC);
 
@@ -104,8 +160,8 @@ function removerMaiorIMC() {
             }
         }
         maior.remove(); 
-    }else{
-        alert("Não há pessoas para remover!")
+    } else {
+        alert("Não há pessoas para remover!");
     }
 }
 
@@ -123,7 +179,10 @@ function removerMenorIMC() {
             }
         }
         menor.remove(); 
-    }else{
-        alert("Não há pessoas para remover!")
+    } else {
+        alert("Não há pessoas para remover!");
     }
 }
+
+// Carregar as pessoas ao iniciar a página
+carregarPessoas();
