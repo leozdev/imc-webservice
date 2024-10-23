@@ -9,6 +9,7 @@ async function carregarPessoas() {
             throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
         }
         const pessoas = await response.json();
+        tabelaImc.innerHTML = ""; //Limpa a tabela
         preencherTabela(pessoas);
     } catch (error) {
         console.error('Erro:', error.message);
@@ -41,33 +42,98 @@ function preencherTabela(pessoas) {
         botaos.innerHTML = '<div class="button-container"><button class="aumentar-peso">+ Peso</button> <button class="diminuir-peso">- Peso</button> <button class="excluir">Excluir</button></div>';
 
         // Adicionar eventos para os botões
-        adicionarEventosBotoes(botaos, pesoCell, alturaCell, imcCell, statusCell);
+        adicionarEventosBotoes(botaos,pessoa);
     });
 }
 
+async function procurarPessoa(idPessoa) {
+    try {
+        const url = `https://ifsp.ddns.net/webservices/imc/pessoa/${idPessoa}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            return null; 
+        }
+        const pessoa = await response.json();
+        return pessoa;
+    } catch (error) {
+        console.log("Erro:", error.message);
+        return null; 
+    }
+}
+
+//DELETE
+async function deletarPessoa(idPessoa) {
+    try {
+        const pessoaExiste= await procurarPessoa(idPessoa);
+
+        if(pessoaExiste==null){
+            alert("Pessoa não encontrada!");
+            await carregarPessoas();
+            return;
+        }
+   
+        const url = `https://ifsp.ddns.net/webservices/imc/pessoa/${idPessoa}`;
+        const config = {
+            method: "DELETE"
+        };
+
+        const response = await fetch(url, config);
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+        }
+        await carregarPessoas(); 
+
+    } catch (error) {
+        console.log("Erro:", error.message);
+    }
+}
+
+//PUT
+async function atualizarPeso(pessoa) {
+
+    const pessoaExiste = await procurarPessoa(pessoa.id);
+
+    if (pessoaExiste==null) {
+        alert("Pessoa não encontrada!");
+        await carregarPessoas(); 
+        return; 
+    }
+    const url = `https://ifsp.ddns.net/webservices/imc/pessoa/${pessoa.id}`;
+    const config = {
+        method: "PUT",
+        body: JSON.stringify(pessoa)
+    };
+    try {
+        const response = await fetch(url, config);
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+        }
+        tabelaImc.innerText = "";
+        await carregarPessoas();
+    } catch (error) {
+        console.log("Erro:", error.message);
+    }
+}
+
+
 // Função para adicionar eventos aos botões de aumentar, diminuir peso e excluir
-function adicionarEventosBotoes(botaos, pesoCell, alturaCell, imcCell, statusCell) {
+function adicionarEventosBotoes(botaos,pessoa) {
     const btnExcluir = botaos.querySelector('.excluir');
-    btnExcluir.addEventListener('click', () => {
-        const row = botaos.closest('tr');
-        row.remove();
-    });
+    btnExcluir.addEventListener("click",() => deletarPessoa(pessoa.id));
 
     const btnAumentarPeso = botaos.querySelector('.aumentar-peso');
     btnAumentarPeso.addEventListener('click', () => {
-        let peso = parseFloat(pesoCell.textContent);
-        peso += 0.5;
-        pesoCell.textContent = peso.toFixed(2);
-        atualizarIMC(peso, alturaCell, imcCell, statusCell);
+        pessoa.peso += 0.5;
+        atualizarPeso(pessoa)
+
     });
+
 
     const btnDiminuirPeso = botaos.querySelector('.diminuir-peso');
     btnDiminuirPeso.addEventListener('click', () => {
-        let peso = parseFloat(pesoCell.textContent);
-        if (peso > 0.5) {
-            peso -= 0.5;
-            pesoCell.textContent = peso.toFixed(2);
-            atualizarIMC(peso, alturaCell, imcCell, statusCell);
+        if (pessoa.peso > 0.5) {
+            pessoa.peso -= 0.5;
+            atualizarPeso(pessoa);
         } else {
             alert("Não é possível deixar o peso negativo!");
         }
@@ -146,43 +212,60 @@ btnRemoverMaiorIMC.addEventListener("click", removerMaiorIMC);
 const btnRemoverMenorIMC = document.querySelector("#remover-menor-imc");
 btnRemoverMenorIMC.addEventListener("click", removerMenorIMC);
 
-function removerMaiorIMC() {
-    let trs = document.querySelectorAll("tr");
-    if (trs.length > 1) {
-        let maior = trs[1]; 
-        let maiorIMC = parseFloat(maior.querySelectorAll("td")[3].innerText);
-        for (let i = 1; i < trs.length; i++) { 
-            let tds = trs[i].querySelectorAll("td");
-            let IMC = parseFloat(tds[3].innerText);
-            if (IMC > maiorIMC) {
-                maior = trs[i];
-                maiorIMC = IMC;
-            }
+//Remover pessoa com o maior IMC
+async function removerMaiorIMC() {
+    const url = 'https://ifsp.ddns.net/webservices/imc/pessoa';
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
         }
-        maior.remove(); 
-    } else {
-        alert("Não há pessoas para remover!");
+        const pessoas = await response.json();
+        if (pessoas.length !== 0) {
+            let maiorIMC = pessoas[0].imc;
+            let idPessoa = pessoas[0].id;
+
+            pessoas.forEach(pessoa => {
+                if (pessoa.imc > maiorIMC) {
+                    maiorIMC = pessoa.imc;
+                    idPessoa = pessoa.id;
+                }
+            });
+            deletarPessoa(idPessoa);
+        }else{
+            alert("Não há pessoas para remover");
+        }
+    } catch (error) {
+        console.log("Erro:", error.message);
     }
 }
 
-function removerMenorIMC() {
-    let trs = document.querySelectorAll("tr");
-    if (trs.length > 1) {
-        let menor = trs[1]; 
-        let menorIMC = parseFloat(menor.querySelectorAll("td")[3].innerText);
-        for (let i = 1; i < trs.length; i++) { 
-            let tds = trs[i].querySelectorAll("td");
-            let IMC = parseFloat(tds[3].innerText);
-            if (IMC < menorIMC) {
-                menor = trs[i];
-                menorIMC = IMC;
-            }
+// Remover pessoa com o menor IMC
+async function removerMenorIMC() {
+    const url = 'https://ifsp.ddns.net/webservices/imc/pessoa';
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
         }
-        menor.remove(); 
-    } else {
-        alert("Não há pessoas para remover!");
+        const pessoas = await response.json();
+        if (pessoas.length !== 0) {
+            let menorIMC = pessoas[0].imc;
+            let idPessoa = pessoas[0].ID;
+
+            pessoas.forEach(pessoa => {
+                if (pessoa.imc < menorIMC) {
+                    menorIMC = pessoa.imc;
+                    idPessoa = pessoa.id;
+                }
+            });
+            deletarPessoa(idPessoa);
+        }else{
+            alert("Não há pessoas para remover");
+        }
+    } catch (error) {
+        console.log("Erro:", error.message);
     }
 }
-
 // Carregar as pessoas ao iniciar a página
 carregarPessoas();
